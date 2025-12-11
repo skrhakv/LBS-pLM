@@ -1,0 +1,5 @@
+__pycache__/
+share/
+ligysis-model.tar.gz
+train.ipynb
+data/model.pt
