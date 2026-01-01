@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Usage:
+# bash ./run-mmseq.sh /home/vit/Projects/LBS-pLM/data/filtering 0.3
+
 OUTPUT_PATH="$1"
 MIN_SEQUENCE_IDENTITY="$2"
 
