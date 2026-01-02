@@ -4,3 +4,5 @@ ligysis-model.tar.gz
 train.ipynb
 data/model.pt
 data/filtering
+data/old
+data/filtered-LIGYSIS/model.pt

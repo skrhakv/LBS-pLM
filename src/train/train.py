@@ -28,13 +28,13 @@ warnings.filterwarnings('ignore')
 torch.manual_seed(42)
 
 MODEL_NAME = 'facebook/esm2_t33_650M_UR50D'
-DATA_PATH = '/home/skrhakv/nn-for-kamila/data/'
+DATA_PATH = '/home/skrhakv/nn-for-kamila/data/filtered-LIGYSIS'
 
 finetuned_model = finetuning_utils.FinetunedEsmModel(MODEL_NAME).half().to(device)
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
-train_dataset = finetuning_utils.process_sequence_dataset(f'{DATA_PATH}train.txt', tokenizer)
-val_dataset = finetuning_utils.process_sequence_dataset(f'{DATA_PATH}validation.txt', tokenizer)
+train_dataset = finetuning_utils.process_sequence_dataset(f'{DATA_PATH}/full-train.txt', tokenizer)
+val_dataset = finetuning_utils.process_sequence_dataset(f'{DATA_PATH}/validation.txt', tokenizer)
 
 partial_collate_fn = functools.partial(finetuning_utils.collate_fn, tokenizer=tokenizer)
 
@@ -108,7 +108,7 @@ for epoch in range(EPOCHS):
             precision, recall, thresholds = metrics.precision_recall_curve(valid_flattened_labels, probabilities)
             auprc = metrics.auc(recall, precision)
 
-            del labels, cbs_logits, valid_flattened_labels, flattened_labels, predictions, probabilities
+            del labels, cbs_logits, valid_flattened_labels, flattened_labels, probabilities
             gc.collect()
             torch.cuda.empty_cache()
     
@@ -144,7 +144,7 @@ for epoch in range(EPOCHS):
         torch.cuda.empty_cache()
 
     train_losses.append(sum(batch_losses) / len(batch_losses))
-    print(f"Epoch: {epoch} | Loss: {loss:.5f}, Accuracy: {test_acc:.2f}% | Test loss: {test_loss:.5f}, AUC: {roc_auc:.4f}, MCC: {mcc:.4f}, F1: {f1:.4f}, AUPRC: {auprc:.4f}, sum: {sum(predictions.to(dtype=torch.int))}")
+    print(f"Epoch: {epoch} | Loss: {loss:.5f}, Accuracy: {test_acc:.2f}% | Test loss: {test_loss:.5f}, AUC: {roc_auc:.4f}, MCC: {mcc:.4f}, F1: {f1:.4f}, AUPRC: {auprc:.4f}, sum: {sum(predictions)}")
 
 finetuned_model.eval()
 
@@ -187,11 +187,11 @@ with torch.no_grad():
         precision, recall, thresholds = metrics.precision_recall_curve(valid_flattened_labels, probabilities)
         auprc = metrics.auc(recall, precision)
 
-        del labels, cbs_logits, valid_flattened_labels, flattened_labels, predictions, probabilities
+        del labels, cbs_logits, valid_flattened_labels, flattened_labels, probabilities
         gc.collect()
         torch.cuda.empty_cache()
         
-print(f"Epoch: {epoch} | Loss: {loss:.5f}, Accuracy: {test_acc:.2f}% | Test loss: {test_loss:.5f}, AUC: {roc_auc:.4f}, MCC: {mcc:.4f}, F1: {f1:.4f}, AUPRC: {auprc:.4f}, sum: {sum(predictions.to(dtype=torch.int))}")
-
 OUTPUT_PATH = f'{DATA_PATH}/model.pt'
 torch.save(finetuned_model, OUTPUT_PATH)
+
+print(f"Epoch: {epoch} | Loss: {loss:.5f}, Accuracy: {test_acc:.2f}% | Test loss: {test_loss:.5f}, AUC: {roc_auc:.4f}, MCC: {mcc:.4f}, F1: {f1:.4f}, AUPRC: {auprc:.4f}, sum: {sum(predictions)}")

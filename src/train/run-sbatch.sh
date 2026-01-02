@@ -8,6 +8,6 @@
 #SBATCH --mail-user=vit.skrhak@matfyz.cuni.cz # send email when job changes state to email address user@example.com
 #SBATCH --exclusive               # Use whole node
 
-cd /home/skrhakv/nn-for-kamila
+cd /home/skrhakv/nn-for-kamila/src/train
 source /home/skrhakv/cryptic-nn/src/fine-tuning/esmc-venv/bin/activate
 python3 train.py
